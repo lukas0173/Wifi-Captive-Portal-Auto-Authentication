@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# This script is called by NetworkManager when network events happen.
+#
+# Arguments passed by NetworkManager:
+# $1: The network interface (e.g., "wlan0")
+# $2: The action (e.g., "up", "down", "connectivity-check")
+#
+# Environment variables available on "connectivity-check":
+# $CONNECTIVITY_STATE: The new connectivity state (FULL, LIMITED, NONE)
+
+TARGET_WIFI_SSID="sinhvien_C"
+YOUR_USERNAME="kiet"
+LOGIN_SCRIPT_PATH="/home/kiet/projects/misc/wifi_auto_authentication/main.py"
+
+# Only proceed if the action is "connectivity-check"
+if [ "$2" != "connectivity-check" ]; then
+    exit 0
+fi
+
+# Get the SSID of the current connection on the specified interface
+CURRENT_SSID=$(nmcli -t -f active,ssid dev wifi | grep '^yes:' | cut -d':' -f2)
+
+# Check if we are connected to the target Wi-Fi and if connectivity is LIMITED
+if [[ "$CURRENT_SSID" == "$TARGET_WIFI_SSID" && "$CONNECTIVITY_STATE" == "LIMITED" ]]; then
+    
+    # Run the Python login script as the specified user.
+    # The script output is logged to the system journal for debugging.
+    logger "NetworkManager: Detected limited connectivity on '$TARGET_WIFI_SSID'. Running auto-login script."
+    # We use 'su' to drop from root privileges to your user privileges.
+    su -c "/usr/bin/python $LOGIN_SCRIPT_PATH" "$YOUR_USERNAME"
+fi
+
+exit 0
