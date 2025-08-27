@@ -1,5 +1,5 @@
 # Notes
-This project aims for a specific use case for my University wifi that implement the Microsoft's Single Sign-On (SSO), you can adjust the script to suit your desire.
+This project aims for a specific use case for my University's Wi-Fi that implements Microsoft's Single Sign-On (SSO). You can adjust the script to suit your desire.
 
 # Using the script
 This project utilize [`uv`](https://docs.astral.sh/uv/), an extremely fast Python package and project manager.
