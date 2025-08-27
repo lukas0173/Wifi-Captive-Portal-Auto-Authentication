@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+import os
 import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -6,9 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-# --- 1. CONFIGURE THIS SECTION ---
-USERNAME = ""
-PASSWORD = ""
+load_dotenv()  # Loads variables from .env into the environment
+
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD")
 # A URL that detects captive portals
 WIFI_CHECK_URL = "https://www.google.com"
 
@@ -24,15 +27,14 @@ def login_with_selenium():
     options = Options()
     options.add_argument("--headless")
 
-    # Set a page load timeout to prevent the script from hanging indefinitely
-    options.page_load_strategy = 'eager'  # Doesn't wait for all images/stylesheets
+    # Set a page load timeout
+    options.page_load_strategy = 'eager'  # ignore images/stylesheets
     driver = webdriver.Firefox(options=options)
-    driver.set_page_load_timeout(15)  # Set a 15-second timeout for page loads
+    driver.set_page_load_timeout(15)
 
     try:
         print(f"Navigating to captive portal check URL: {WIFI_CHECK_URL}")
         try:
-            # This command may time out if we are already online due to the 204 response.
             # We can safely ignore this specific timeout.
             driver.get(WIFI_CHECK_URL)
         except TimeoutException:
@@ -40,14 +42,14 @@ def login_with_selenium():
                 "Page load timed out, which is expected when already online. Checking URL...")
             pass
 
-        # --- 2. Check if a Login is Required ---
+        # Check if a Login is Required
         current_url = driver.current_url
         print(f"Current URL is: {current_url}")
 
         if "login.microsoftonline.com" in current_url:
             print("Redirected to login page. Authentication is required.")
 
-            # --- 3. Interact with the Login Form ---
+            # Interact with the Login Form
             wait = WebDriverWait(driver, 20)
 
             print("Entering email...")
@@ -69,7 +71,7 @@ def login_with_selenium():
 
             print("Login process complete!")
         else:
-            print("Already connected to the internet. No login required. ✅")
+            print("Already connected to the internet. No login required")
 
     except Exception as e:
         print(f"An error occurred during the Selenium process: {e}")
