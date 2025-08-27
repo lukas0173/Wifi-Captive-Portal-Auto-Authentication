@@ -6,6 +6,10 @@ This project utilize [`uv`](https://docs.astral.sh/uv/), an extremely fast Pytho
 You can synchronize the `uv` environment by:
 ```bash
 uv sync
+```
 
+Then source the environment:
+```bash
+source .venv/bin/activate
 ```
 The python version that I'm using is 3.10.2, you can modify it in the `.python-version`
